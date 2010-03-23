@@ -13,7 +13,7 @@
 
 import pygame, sys, os, random
 from pygame.locals import *
-import time
+import time, pdb
 from math import *
 from ball import *
 from numpy import *
@@ -86,9 +86,10 @@ class Cue(pygame.sprite.Sprite):
                 self.speed = array([-(dest[0]-src[0])*self.board.VEL_MAX/MAX_DRAG,-(dest[1]-src[1])*self.board.VEL_MAX/MAX_DRAG])
             print 'cue speed =',self.speed
             if hypot(*self.speed)<1: return
-            self.board.initballspeed = [b.speed.copy() for b in self.board.ballsprites.sprites()]
-            print self.board.initballspeed
-            self.board.initballpos = [b.pos for b in self.board.ballsprites.sprites()]
+            
+            # defining the convention that in initballpos and initballspeed, whiteball is always at the end
+            self.board.initballspeed = [b.speed for b in self.board.ballsprites.sprites() if b is not self.board.whiteball] + [self.board.whiteball.speed]
+            self.board.initballpos = [b.pos for b in self.board.ballsprites.sprites() if b is not self.board.whiteball] + [self.board.whiteball.pos]
             self.board.initcuespeed = self.speed.copy()
             self.board.inittopleft = self.rect.topleft
             self.board.initrect = self.rect
@@ -115,6 +116,7 @@ class Billiards():
     pygame.display.set_caption(caption)
     self.background = loadImage(background)
     self.screen.blit(self.background,(0,0))
+    self.whiteball = None
     self.generate_balls()
     self.init_consts()
     self.draw()
@@ -127,7 +129,7 @@ class Billiards():
 
   def generate_balls(self, posarr=None, speeds=None):
     n = 0
-    nballs = len(posarr) if posarr is not None else self.n_balls
+    nballs = len(posarr) - 1  if posarr is not None else self.n_balls
     while n < nballs:
       newball = Ball((0,0), self)
       self.radius = newball.radius
@@ -135,19 +137,23 @@ class Billiards():
       pos = array(((random.uniform(self.radius,self.width - self.radius)), (random.uniform(self.radius,self.height - self.radius)))) if posarr is None else posarr[n]
       newball.set_pos(pos)
       newball.speed = vel
-      newball.initpos[:] = newball.pos
       if n==0:
           self.ballsprites.add(newball)
           n = n + 1
       else:
           collide = False
-          for oldball in self.ballsprites.sprites():
+          for oldball in self.ballsprites.sprites()+self.holesprites.sprites():
               if newball.rect.colliderect(oldball.rect):
                   collide = True
           if not collide:
               self.ballsprites.add(newball)
               n += 1
-    self.whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
+    if posarr is not None:
+      whiteballpos = posarr[-1]
+      whiteballspeed = speeds[-1]
+      self.whiteball = Ball(whiteballpos,self,vel=whiteballspeed,is_white=True)
+    if self.whiteball is None:
+      self.whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
     self.ballsprites.add(self.whiteball)
 
   def init_consts(self):
@@ -197,8 +203,8 @@ class Billiards():
             dirx_unit, diry_unit = dir_unit = r21/dist
             #print 'dist=',dist
             next_int = lambda x: ceil(x) if x>0 else floor(x)
-            ball2.rect.move_ip((next_int(0.5*r21[0]-r*dirx_unit),next_int(0.5*r21[1]-r*diry_unit)))
-            ball1.rect.move_ip((next_int(-0.5*r21[0]+r*dirx_unit),next_int(-0.5*r21[1]+r*diry_unit)))
+	    ball2.rect.move_ip((next_int(0.5*r21[0]-r*dirx_unit),next_int(0.5*r21[1]-r*diry_unit)))
+	    ball1.rect.move_ip((next_int(-0.5*r21[0]+r*dirx_unit),next_int(-0.5*r21[1]+r*diry_unit)))
             vr1 = dot(ball1.speed,dir_unit)
             vr2 = dot(ball2.speed,dir_unit)
             dvr = vr2 - vr1
@@ -241,8 +247,6 @@ class Billiards():
     #print irect, ball.rect.center, r21
 
     ball.speed = cue.speed*0.6
-    #ball.initspeed[:] = ball.speed
-    #ball.initpos[:] = ball.pos
     cue.speed[:] = 0.0
     self.collidecue_sound.play(maxtime=0.0001)
     return True
@@ -313,6 +317,7 @@ class Billiards():
                 mouse_src = pygame.mouse.get_pos()
                 self.launch_ball(mouse_src)
             if event.type == KEYDOWN and event.key == K_e:
+		#pdb.set_trace()
                 self.replaying = True
                 self.wait = 0.03
                 self.ballsprites.empty()

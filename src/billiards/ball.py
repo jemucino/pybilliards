@@ -31,7 +31,6 @@ class Ball(pygame.sprite.Sprite):
     self.initspeed = vel.copy()
     self.radius = int(self.rect.width / 2.0 + 1.0)
     self.pos = pos
-    self.initpos = pos.copy()
 
   def draw(self):
     self.board.screen.blit(self.image, self.rect)
