@@ -317,7 +317,6 @@ class Billiards():
                 mouse_src = pygame.mouse.get_pos()
                 self.launch_ball(mouse_src)
             if event.type == KEYDOWN and event.key == K_e:
-		#pdb.set_trace()
                 self.replaying = True
                 self.wait = 0.03
                 self.ballsprites.empty()
@@ -326,6 +325,8 @@ class Billiards():
                 self.cuesprite.sprites()[0].rect.topleft = self.inittopleft
                 self.cuesprite.update(None,False)
                 self.start_game()
+	    if event.type == KEYDOWN and event.key == K_d:
+	        pdb.set_trace()
             if event.type == QUIT:
                 sys.exit(0)
 	if self.allsleeping():
