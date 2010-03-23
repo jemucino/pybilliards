@@ -139,7 +139,7 @@ class Billiards():
       newball.speed = vel
       if n==0:
           self.ballsprites.add(newball)
-          n = n + 1
+          n = n + 1 
       else:
           collide = False
           for oldball in self.ballsprites.sprites()+self.holesprites.sprites():
@@ -151,7 +151,7 @@ class Billiards():
     if posarr is not None:
       whiteballpos = posarr[-1]
       whiteballspeed = speeds[-1]
-      self.whiteball = Ball(whiteballpos,self,vel=whiteballspeed,is_white=True)
+      self.whiteball = Ball(whiteballpos,self,vel=whiteballspeed,is_white=True) # making last ball on posarr and speeds as new whiteball
     if self.whiteball is None:
       self.whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
     self.ballsprites.add(self.whiteball)
