@@ -18,9 +18,11 @@ YELLOW = (255, 255, 0)
 mod = lambda v: sqrt(v[0] * v[0] + v[1] * v[1])
 
 class Ball(pygame.sprite.Sprite):
-  def __init__(self, pos, board, vel=array([0.0,0.0])):
+  def __init__(self, pos, board, vel=array([0.0,0.0]),is_white=False):
     pygame.sprite.Sprite.__init__(self)
-    self.image = pygame.image.load('data/ball.gif').convert()
+    self.is_white = is_white
+    if self.is_white: self.image = pygame.image.load('data/whiteball.gif').convert()
+    else: self.image = pygame.image.load('data/ball.gif').convert()
     self.rect = self.image.get_rect()
     pos = array(pos)
     self.rect.center = pos
@@ -83,10 +85,9 @@ class Ball(pygame.sprite.Sprite):
   def go_to_holes(self):
     for hole in self.board.holerectlist:
         if hypot(*(self.rect.center-array(hole.center)))<0.5*self.board.hole_radius:
-        #if hole.collidepoint(self.rect.center): # if ball position in the holes
-            self.board.ballsprites.remove(self) # remove that ball from the game
-            #self.board.update_score()          # to be implemented
-            self.board.gotoholes_sound.play()
+	  self.board.ballsprites.remove(self) # remove that ball from the game
+	  #self.board.update_score(ball=self)          # to be implemented
+	  self.board.gotoholes_sound.play()
 
 
   def update(self,change = None,dest = None):

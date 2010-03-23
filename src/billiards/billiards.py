@@ -31,10 +31,9 @@ YELLOW = (255, 255, 0)
 mod = lambda v: sqrt(v[0] * v[0] + v[1] * v[1])
 
 class Cue(pygame.sprite.Sprite):
-    def __init__(self,hitting_ball,src,board):
+    def __init__(self,board):
         pygame.sprite.Sprite.__init__(self)
         self.board = board
-        self.hitting_ball = hitting_ball
         self.CUE_WIDTH = 10
         self.CUE_LENGTH = 150
         self.image = pygame.image.load('data/cue.gif').convert()
@@ -47,7 +46,8 @@ class Cue(pygame.sprite.Sprite):
         self.radius = self.rect.centery - self.rect.top
 
 
-    def update(self,src,dest,mousepressed):
+    def update(self,dest,mousepressed):
+        src = self.board.whiteball.pos
         if mousepressed:
             dest_minus_src = (dest[0]-src[0],dest[1]-src[1])
             angle = atan2(dest_minus_src[0],dest_minus_src[1])
@@ -82,7 +82,7 @@ class Cue(pygame.sprite.Sprite):
             self.rect.topleft = left,top
         else:
             MAX_DRAG = self.board.height/8.0
-            if src is not None:
+            if dest is not None:
                 self.speed = array([-(dest[0]-src[0])*self.board.VEL_MAX/MAX_DRAG,-(dest[1]-src[1])*self.board.VEL_MAX/MAX_DRAG])
             print 'cue speed =',self.speed
             if hypot(*self.speed)<1: return
@@ -109,7 +109,7 @@ class Billiards():
     self.cuesprite = pygame.sprite.RenderPlain()
     self.width, self.height, self.n_balls = width, height, n_balls
     self.RUNNING, self.VEL_MAX = False, 5
-    if friction==True: self.friction = 5.0*self.VEL_MAX**2/float(4*self.height)
+    if friction==True: self.friction = 2.5*self.VEL_MAX**2/float(4*self.height)
     else: self.friction = 0.0
     self.screen = pygame.display.set_mode((self.width, self.height))
     pygame.display.set_caption(caption)
@@ -147,6 +147,8 @@ class Billiards():
           if not collide:
               self.ballsprites.add(newball)
               n += 1
+    self.whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
+    self.ballsprites.add(self.whiteball)
 
   def init_consts(self):
       rad = self.radius
@@ -246,28 +248,35 @@ class Billiards():
     return True
 
   def launch_ball(self,mouse_src):
-    for ball in self.ballsprites.sprites():
-        if ball.rect.collidepoint(mouse_src):
-            self.hitting_ball = ball
-            mouse_src = ball.rect.center
+    # making all other previous Cues disappear and making a new one
+    if not len(self.cuesprite.sprites()) == 0: self.cuesprite.empty()
+    self.cuesprite.add(Cue(self))
 
-            # making all other previous Cues disappear and making a new one
-            if not len(self.cuesprite.sprites()) == 0: self.cuesprite.empty()
-            self.cuesprite.add(Cue(self.hitting_ball,mouse_src,self))
+    #init_rect = self.cuesprite.sprites()[0].rect
+    mousepressed = True         # remains True till the mouse is held down
+    while mousepressed:
+        e = pygame.event.poll()
+        if e.type==MOUSEMOTION:
+            self.cuesprite.clear(self.screen, self.background)
+            self.cuesprite.update(pygame.mouse.get_pos(),mousepressed)
+            self.draw()
+        if e.type==MOUSEBUTTONUP:
+            print 'mouse released'
+            mousepressed = False
+            self.cuesprite.update(pygame.mouse.get_pos(),mousepressed)
+            self.start_game()
 
-            #init_rect = self.cuesprite.sprites()[0].rect
-            mousepressed = True         # remains True till the mouse is held down
-            while mousepressed:
-                e = pygame.event.poll()
-                if e.type==MOUSEMOTION:
-                    self.cuesprite.clear(self.screen, self.background)
-                    self.cuesprite.update(mouse_src,pygame.mouse.get_pos(),mousepressed)
-                    self.draw()
-                if e.type==MOUSEBUTTONUP:
-                    print 'mouse released'
-                    mousepressed = False
-                    self.cuesprite.update(mouse_src,pygame.mouse.get_pos(),mousepressed)
-                    self.start_game()
+  def allsleeping(self):
+	for ball in self.ballsprites.sprites():
+		if hypot(*ball.speed)>self.friction:
+			return False
+	return True
+
+  def on_allsleeping(self):
+	if not self.whiteball in self.ballsprites.sprites(): 
+		whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
+		self.whiteball = whiteball
+		self.ballsprites.add(whiteball)
 
   def start_game(self):
     self.RUNNING = True
@@ -310,15 +319,17 @@ class Billiards():
                 self.generate_balls(self.initballpos, self.initballspeed)
                 self.cuesprite.sprites()[0].speed = self.initcuespeed
                 self.cuesprite.sprites()[0].rect.topleft = self.inittopleft
-                self.cuesprite.update(None,None,False)
+                self.cuesprite.update(None,False)
                 self.start_game()
             if event.type == QUIT:
                 sys.exit(0)
-	if len(self.ballsprites.sprites()) == 0:
-	    if self.runningballs: 
-	      if not pygame.mixer.get_busy():
-		self.finishmessage.play()
-		self.runningballs = False
+	if self.allsleeping():
+	  self.on_allsleeping()
+	if len(self.ballsprites.sprites()) == 1 and self.ballsprites.sprites()[0]==self.whiteball:
+	  if self.runningballs: 
+	    if not pygame.mixer.get_busy():
+	      self.finishmessage.play()
+	      self.runningballs = False
     while self.RUNNING == False:
         event = pygame.event.poll()
         if event.type == MOUSEBUTTONDOWN:
