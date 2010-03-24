@@ -61,6 +61,13 @@ class Scoreboard(pygame.sprite.Sprite):
         activeplayer_index = self.players.index(self.active_player)
         if activeplayer_index==len(self.players)-1: activeplayer_index = -1
         self.new_active_player = self.players[activeplayer_index + 1] 
+        
+    def set_scores(self,scores):
+        '''
+        Sets all the scores according to a list of scores provided by 'scores'.
+        '''
+        for i,player in enumerate(self.players):
+            player.score = scores[i]
 
     def update(self,ball):
         '''
@@ -370,6 +377,7 @@ class Billiards():
             if event.type == MOUSEBUTTONDOWN:
                 self.new_player_set = False
                 self.scoreboard.set_active_player(self.scoreboard.new_active_player)
+                self.initscores = [player.score for player in self.players]
                 if self.replaying:
                     self.wait = 0.01
                     self.replaying = False
@@ -383,6 +391,7 @@ class Billiards():
                 self.cuesprite.sprites()[0].speed = self.initcuespeed
                 self.cuesprite.sprites()[0].rect.topleft = self.inittopleft
                 self.cuesprite.update(None,False)
+                self.scoreboard.set_scores(self.initscores)
                 self.start_game()
             if event.type == KEYDOWN and event.key == K_d:
                 pdb.set_trace()
