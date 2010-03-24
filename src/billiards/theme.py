@@ -46,7 +46,7 @@ class Theme(object):
         return ret
 
     def get_cue(self):
-        ret = pygame.image.load(os.path.join(self.path,'ball.png'))
+        ret = pygame.image.load(os.path.join(self.path,'cue.png'))
         ret.convert_alpha()
         return ret
 

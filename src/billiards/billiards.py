@@ -21,6 +21,8 @@ from numpy import *
 from settings import settings
 from theme import get_theme
 
+import logging
+
 if not pygame.font: print "Warning, fonts disabled!"
 if not pygame.mixer: print "Warning, sounds disabled!"
 
@@ -53,11 +55,11 @@ class Scoreboard(pygame.sprite.Sprite):
 
     def set_active_player(self,player):
         for p in self.players:
-          if p is player:
-             p.is_active = True
-             self.active_player = player
-          else:
-             p.is_active = False
+            if p is player:
+                p.is_active = True
+                self.active_player = player
+            else:
+                p.is_active = False
         self.new_active_player = self.active_player
 
     def set_new_active_player(self):
@@ -82,12 +84,12 @@ class Scoreboard(pygame.sprite.Sprite):
                 self.active_player.score += 1
 
     def display(self):
-        print 'Player ID\tScore\tStatus'
+        logging.info('Player ID\tScore\tStatus')
         underline = lambda s: '='*len(s)
-        print underline('Player ID')+'\t'+underline('Score')+'\t'+underline('Status')
+        logging.info(underline('Player ID')+'\t'+underline('Score')+'\t'+underline('Status'))
         for player in self.board.players:
                 status = 'Active' if player.is_active else 'Idle'
-                print ('%s\t%s\t')%(player.name,player.score)+status
+                logging.info(('%s\t%s\t')%(player.name,player.score)+status)
 
 class Cue(pygame.sprite.Sprite):
     def __init__(self, board):
@@ -327,7 +329,7 @@ class Billiards():
                 self.cuesprite.update(pygame.mouse.get_pos(), mousepressed)
                 self.draw()
             if e.type == MOUSEBUTTONUP:
-                print 'mouse released'
+                logging.info('mouse released')
                 mousepressed = False
                 self.cuesprite.update(pygame.mouse.get_pos(), mousepressed)
                 self.start_game()
@@ -446,4 +448,3 @@ if __name__ == '__main__':
     game = Billiards(friction=True)
     while True:
         game.run()
-    sys.exit(0)

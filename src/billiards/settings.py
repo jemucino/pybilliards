@@ -42,7 +42,7 @@ class Settings(object):
             data = d['settings']
             self._settings.update(data)
         except Exception, exc:
-            print exc
+            logging.warn(repr(exc))
             logging.warn('Unable top load settings from: %s'%filename)
 
 settings = Settings()
