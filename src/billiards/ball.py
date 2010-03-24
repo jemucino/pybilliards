@@ -84,9 +84,9 @@ class Ball(pygame.sprite.Sprite):
   def go_to_holes(self):
     for hole in self.board.holerectlist:
         if hypot(*(self.rect.center-array(hole.center)))<0.5*self.board.hole_radius:
-	  self.board.ballsprites.remove(self) # remove that ball from the game
-	  #self.board.update_score(ball=self)          # to be implemented
-	  self.board.gotoholes_sound.play()
+          self.board.ballsprites.remove(self) # remove that ball from the game
+          self.board.scoreboard.update(ball=self)          # update the score
+          self.board.gotoholes_sound.play()
 
 
   def update(self,change = None,dest = None):

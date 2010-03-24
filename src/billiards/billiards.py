@@ -30,6 +30,55 @@ YELLOW = (255, 255, 0)
 
 mod = lambda v: sqrt(v[0] * v[0] + v[1] * v[1])
 
+class Player:
+    def __init__(self,board,ID,name=None):
+        '''
+        ID: ID denotes a number the user wants to assign to current player as idenitification mark
+        '''
+        self.board = board
+        self.score = 0
+        self.ID = ID 
+        self.name = name if name is not None else 'Player '+str(ID+1)
+        self.is_active = False
+
+class Scoreboard(pygame.sprite.Sprite):
+    def __init__(self,board):
+        pygame.sprite.Sprite.__init__(self)
+        self.board = board
+        self.players = self.board.players
+        self.set_active_player(self.players[0])
+
+    def set_active_player(self,player):
+        for p in self.players:
+          if p is player:
+             p.is_active = True
+             self.active_player = player
+          else:
+             p.is_active = False
+        self.new_active_player = self.active_player
+
+    def set_new_active_player(self):
+        activeplayer_index = self.players.index(self.active_player)
+        if activeplayer_index==len(self.players)-1: activeplayer_index = -1
+        self.new_active_player = self.players[activeplayer_index + 1] 
+
+    def update(self,ball):
+        '''
+        Updates score of current player by +1 if any non-white ball goes to holes and -1 if white ball goes to hole.
+        '''        
+        if ball is self.board.whiteball:
+                self.active_player.score -= 1
+        else:
+                self.active_player.score += 1
+
+    def display(self):
+        print 'Player ID\tScore\tStatus'
+        underline = lambda s: '='*len(s)
+        print underline('Player ID')+'\t'+underline('Score')+'\t'+underline('Status')
+        for player in self.board.players:
+                status = 'Active' if player.is_active else 'Idle'
+                print ('%s\t%s\t')%(player.name,player.score)+status   
+        
 class Cue(pygame.sprite.Sprite):
     def __init__(self,board):
         pygame.sprite.Sprite.__init__(self)
@@ -84,7 +133,6 @@ class Cue(pygame.sprite.Sprite):
             MAX_DRAG = self.board.height/8.0
             if dest is not None:
                 self.speed = array([-(dest[0]-src[0])*self.board.VEL_MAX/MAX_DRAG,-(dest[1]-src[1])*self.board.VEL_MAX/MAX_DRAG])
-            print 'cue speed =',self.speed
             if hypot(*self.speed)<1: return
             
             # defining the convention that in initballpos and initballspeed, whiteball is always at the end
@@ -103,11 +151,14 @@ class Cue(pygame.sprite.Sprite):
 
 
 class Billiards():
-  def __init__(self, width=600, height=375, n_balls=7, caption='Billiards',friction=True,background='background.jpg'):
+  def __init__(self, width=600, height=375, n_balls=7, nplayers=2,caption='Billiards',friction=True,background='background.jpg'):
     pygame.init()
     self.ballsprites = pygame.sprite.RenderPlain()
     self.holesprites = pygame.sprite.RenderPlain()
     self.cuesprite = pygame.sprite.RenderPlain()
+    self.players = [Player(self,i) for i in range(nplayers)]
+    self.scoreboard = Scoreboard(self)
+    self.new_player_set = False
     self.width, self.height, self.n_balls = width, height, n_balls
     self.RUNNING, self.VEL_MAX = False, 5
     if friction==True: self.friction = 2.5*self.VEL_MAX**2/float(4*self.height)
@@ -126,6 +177,7 @@ class Billiards():
     self.collidecue_sound = pygame.mixer.Sound('data/collide.wav')
     self.gotoholes_sound = pygame.mixer.Sound('data/gotoholes.wav')
     self.finishmessage = pygame.mixer.Sound('data/finish_message.ogg')
+
 
   def generate_balls(self, posarr=None, speeds=None):
     n = 0
@@ -152,7 +204,7 @@ class Billiards():
       whiteballpos = posarr[-1]
       whiteballspeed = speeds[-1]
       self.whiteball = Ball(whiteballpos,self,vel=whiteballspeed,is_white=True) # making last ball on posarr and speeds as new whiteball
-    if self.whiteball is None:
+    else:
       self.whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
     self.ballsprites.add(self.whiteball)
 
@@ -181,14 +233,13 @@ class Billiards():
       self.ballsprites.draw(self.screen)
       if not len(self.cuesprite.sprites())==0:
           self.cuesprite.draw(self.screen)
+      self.scoreboard.display()
       pygame.display.flip()
 
   def after_one_timestep(self):
     self.screen.blit(self.background, (0,0))
     self.ballsprites.update()
     self.draw()
-    #energy = sum([dot(i.speed,i.speed) for i in self.ballsprites.sprites()])
-    #print 'Total Energy', energy
     for ball in self.ballsprites.sprites():
         if mod(ball.speed)>self.friction:
             self.runningballs = True
@@ -201,22 +252,21 @@ class Billiards():
         dist = hypot(*r21)
         if dist<2*r:
             dirx_unit, diry_unit = dir_unit = r21/dist
-            #print 'dist=',dist
             next_int = lambda x: ceil(x) if x>0 else floor(x)
-	    ball2.rect.move_ip((next_int(0.5*r21[0]-r*dirx_unit),next_int(0.5*r21[1]-r*diry_unit)))
-	    ball1.rect.move_ip((next_int(-0.5*r21[0]+r*dirx_unit),next_int(-0.5*r21[1]+r*diry_unit)))
+            try:
+                ball2.rect.move_ip((next_int(0.5*r21[0]-r*dirx_unit),next_int(0.5*r21[1]-r*diry_unit)))
+                ball1.rect.move_ip((next_int(-0.5*r21[0]+r*dirx_unit),next_int(-0.5*r21[1]+r*diry_unit)))
+            except TypeError:
+                pdb.set_trace()
             vr1 = dot(ball1.speed,dir_unit)
             vr2 = dot(ball2.speed,dir_unit)
             dvr = vr2 - vr1
-            #print 'dvr', dvr
             ball2.speed[:] = ball2.speed - dvr*dir_unit
             ball1.speed[:] = ball1.speed + dvr*dir_unit
             newdist = hypot(ball1.rect.center[0] - ball2.rect.center[0],ball1.rect.center[1] - ball2.rect.center[1])
             vr1 = dot(ball1.speed,dir_unit)
             vr2 = dot(ball2.speed,dir_unit)
             dvr = vr2 - vr1
-            #print 'newdist', newdist, 'newdvr', dvr
-            #self.collidecue_sound.play(maxtime=0.0001)
             return True
         else: return False
       else:
@@ -235,16 +285,15 @@ class Billiards():
         newheadondist = dot(cuespeed_unit,r21)
         #if dot(r21,r21next) < 0:
         if True:
-	  if hypot(*(r21 - dot(cuespeed_unit,r21)*cuespeed_unit)) < r and abs(dot(cuespeed_unit,r21))<hypot(*cue.speed):
+          if hypot(*(r21 - dot(cuespeed_unit,r21)*cuespeed_unit)) < r and abs(dot(cuespeed_unit,r21))<hypot(*cue.speed):
             if newheadondist < headondist:
                 headondist = newheadondist
                 ball = b
-		
+                
     if ball is None: return False
     tip = irect.center + cue.CUE_LENGTH/2.0*(cue.speed/hypot(*cue.speed))
     r21 = array((ball.rect.center[0] - tip[0],ball.rect.center[1] - tip[1]))
     dist = hypot(*r21)
-    #print irect, ball.rect.center, r21
 
     ball.speed = cue.speed*0.6
     cue.speed[:] = 0.0
@@ -265,22 +314,25 @@ class Billiards():
             self.cuesprite.update(pygame.mouse.get_pos(),mousepressed)
             self.draw()
         if e.type==MOUSEBUTTONUP:
-            print 'mouse released'
             mousepressed = False
             self.cuesprite.update(pygame.mouse.get_pos(),mousepressed)
             self.start_game()
 
   def allsleeping(self):
-	for ball in self.ballsprites.sprites():
-		if hypot(*ball.speed)>self.friction:
-			return False
-	return True
+        for ball in self.ballsprites.sprites():
+                if hypot(*ball.speed)>self.friction:
+                        return False
+        return True
 
   def on_allsleeping(self):
-	if not self.whiteball in self.ballsprites.sprites(): 
-		whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
-		self.whiteball = whiteball
-		self.ballsprites.add(whiteball)
+        if self.whiteball in self.ballsprites.sprites():
+            if not self.new_player_set:
+                self.scoreboard.set_new_active_player()
+        else: 
+            whiteball = Ball((self.width/2.0,self.height/2.0),self,is_white=True)
+            self.whiteball = whiteball
+            self.ballsprites.add(whiteball)
+        self.new_player_set = True
 
   def start_game(self):
     self.RUNNING = True
@@ -308,9 +360,16 @@ class Billiards():
                 pygame.display.toggle_fullscreen()
             if event.type == KEYDOWN and event.key == K_n:
                 #print 'new game'
+                #self.__init__()
+                for player in self.players:
+                     player.score = 0 
+                     player.is_active = False
+                self.scoreboard.set_active_player(self.players[0])
                 self.ballsprites.empty()
                 self.generate_balls()
             if event.type == MOUSEBUTTONDOWN:
+                self.new_player_set = False
+                self.scoreboard.set_active_player(self.scoreboard.new_active_player)
                 if self.replaying:
                     self.wait = 0.01
                     self.replaying = False
@@ -325,17 +384,17 @@ class Billiards():
                 self.cuesprite.sprites()[0].rect.topleft = self.inittopleft
                 self.cuesprite.update(None,False)
                 self.start_game()
-	    if event.type == KEYDOWN and event.key == K_d:
-	        pdb.set_trace()
+            if event.type == KEYDOWN and event.key == K_d:
+                pdb.set_trace()
             if event.type == QUIT:
                 sys.exit(0)
-	if self.allsleeping():
-	  self.on_allsleeping()
-	if len(self.ballsprites.sprites()) == 1 and self.ballsprites.sprites()[0]==self.whiteball:
-	  if self.runningballs: 
-	    if not pygame.mixer.get_busy():
-	      self.finishmessage.play()
-	      self.runningballs = False
+        if self.allsleeping():
+          self.on_allsleeping()
+        if len(self.ballsprites.sprites()) == 1 and self.ballsprites.sprites()[0]==self.whiteball:
+          if self.runningballs: 
+            if not pygame.mixer.get_busy():
+              self.finishmessage.play()
+              self.runningballs = False
     while self.RUNNING == False:
         event = pygame.event.poll()
         if event.type == MOUSEBUTTONDOWN:
