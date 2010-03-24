@@ -20,13 +20,13 @@ mod = lambda v: sqrt(v[0] * v[0] + v[1] * v[1])
 class Ball(pygame.sprite.Sprite):
   def __init__(self, pos, board, vel=array([0.0,0.0]),is_white=False):
     pygame.sprite.Sprite.__init__(self)
+    self.board = board
     self.is_white = is_white
-    if self.is_white: self.image = pygame.image.load('data/whiteball.gif').convert()
-    else: self.image = pygame.image.load('data/ball.gif').convert()
+    if self.is_white: self.image = self.board.theme.get_ball(0)
+    else: self.image = self.board.theme.get_ball()
     self.rect = self.image.get_rect()
     pos = array(pos)
     self.rect.center = pos
-    self.board = board
     self.speed = vel
     self.initspeed = vel.copy()
     self.radius = int(self.rect.width / 2.0 + 1.0)
