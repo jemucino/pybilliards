@@ -342,9 +342,13 @@ class Billiards():
 
     def on_allsleeping(self):
         if not self.whiteball in self.ballsprites.sprites():
-            whiteball = Ball((self.width / 2.0, self.height / 2.0), self, is_white=True)
-            self.whiteball = whiteball
-            self.ballsprites.add(whiteball)
+            if not self.new_player_set:
+                self.scoreboard.set_new_active_player()
+            else:
+                whiteball = Ball((self.width / 2.0, self.height / 2.0), self, is_white=True)
+                self.whiteball = whiteball
+                self.ballsprites.add(whiteball)
+        self.new_player_set = True
 
     def start_game(self):
         self.RUNNING = True
@@ -372,9 +376,16 @@ class Billiards():
                     pygame.display.toggle_fullscreen()
                 if event.type == KEYDOWN and event.key == K_n:
                     #print 'new game'
+                    for player in self.players:
+                        player.score = 0
+                        player.is_active = False
+                    self.scoreboard.set_active_player(self.players[0])
                     self.ballsprites.empty()
                     self.generate_balls()
                 if event.type == MOUSEBUTTONDOWN:
+                    self.new_player_set = False
+                    self.scoreboard.set_active_player(self.scoreboard.new_active_player)
+                    self.initscores = [player.score for player in self.players]
                     if self.replaying:
                         self.wait = 0.01
                         self.replaying = False
@@ -388,6 +399,7 @@ class Billiards():
                     self.cuesprite.sprites()[0].speed = self.initcuespeed
                     self.cuesprite.sprites()[0].rect.topleft = self.inittopleft
                     self.cuesprite.update(None, False)
+                    self.scoreboard.set_scores(self.initscores)
                     self.start_game()
                 if event.type == KEYDOWN and event.key == K_d:
                     pdb.set_trace()
@@ -413,9 +425,9 @@ class Billiards():
                 if event.type == KEYUP and event.key == K_SPACE:
                     self.RUNNING = True
                     self.start_game()
-                if event.type == KEYDOWN and event.key == K_q:
+                elif event.type == KEYDOWN and event.key == K_q:
                     sys.exit(0)
-                if event.type == MOUSEBUTTONDOWN:
+                elif event.type == MOUSEBUTTONDOWN:
                     mouse_src = pygame.mouse.get_pos()
                     self.launch_ball(mouse_src)
 
@@ -427,24 +439,15 @@ class Billiards():
                     #ball.speed = self.VEL_MAX * (2*random.randn(2)-1)
                 self.start_game()
             elif event.type == QUIT:
-                sys.exit(0)
+                return False
             elif event.type == KEYDOWN and event.key == K_q:
-                sys.exit(0)
+                return False
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_src = pygame.mouse.get_pos()
                 self.launch_ball(mouse_src)
-
-def loadImage(name, colorKey=None):
-    completeName = os.path.join('data', name) # Get a full name
-    image = pygame.image.load(completeName) # load the image
-    image = image.convert() # Convert the image for speed
-    if colorKey != None: # colorkey (transparency) calculation
-        if colorKey == -1:
-            colorKey = image.get_at((0, 0))
-        image.set_colorkey(colorKey)
-    return image
+        return True
 
 if __name__ == '__main__':
     game = Billiards(friction=True)
-    while True:
-        game.run()
+    while game.run():
+        pass
