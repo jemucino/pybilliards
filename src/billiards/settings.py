@@ -8,10 +8,12 @@ import os
 class Settings(object):
     def __init__(self):
         self._settings = {}
-        #self.userdir = self._settings['userdir'] = os.path.join(os.path.expanduser('~'),'.config','pybilliards')
         self.add_from_file(os.path.join('settings_default.py'))
         self.userdir = self._settings['userdir']
         self.add_from_file(os.path.join(self.userdir,'user_settings.py'))
+        print self._settings['loglevel'].upper()
+        logging.basicConfig(level=getattr(logging,self._settings['loglevel'].upper()))
+
 
     def get(self, key):
         keys = key.split('.')
@@ -42,7 +44,9 @@ class Settings(object):
             data = d['settings']
             self._settings.update(data)
         except Exception, exc:
-            logging.warn(repr(exc))
-            logging.warn('Unable top load settings from: %s'%filename)
+            # any log call before basicConfig results in failure to set the log level
+            #logging.warn(repr(exc))
+            #logging.warn('Unable to load settings from: %s'%filename)
+            pass
 
 settings = Settings()

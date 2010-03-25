@@ -38,7 +38,7 @@ mod = lambda v: sqrt(v[0] * v[0] + v[1] * v[1])
 class Player:
     def __init__(self,board,ID,name=None):
         '''
-        ID: ID denotes a number the user wants to assign to current player as idenitification mark
+        ID: ID denotes a number the user wants to assign to current player as identification mark
         '''
         self.board = board
         self.score = 0
@@ -79,9 +79,9 @@ class Scoreboard(pygame.sprite.Sprite):
         Updates score of current player by +1 if any non-white ball goes to holes and -1 if white ball goes to hole.
         '''
         if ball is self.board.whiteball:
-                self.active_player.score -= 1
+            self.active_player.score -= 1
         else:
-                self.active_player.score += 1
+            self.active_player.score += 1
 
     def display(self):
         logging.info('Player ID\tScore\tStatus')
@@ -312,7 +312,7 @@ class Billiards():
 
         ball.speed = cue.speed * 0.6
         cue.speed[:] = 0.0
-        self.collidecue_sound.play(maxtime=0.0001)
+        self.collidecue_sound.play(maxtime=100)
         return True
 
     def launch_ball(self, mouse_src):
