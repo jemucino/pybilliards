@@ -6,6 +6,9 @@ syntax: glob
 
 # switch to regexp syntax.
 syntax: regexp
+^build
+^dist
+^MANIFEST$
 
 #pydev specific ignores
 ^\.settings
