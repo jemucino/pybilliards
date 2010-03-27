@@ -1,0 +1,62 @@
+PyBilliards is a simple 2D game written in python using pygame
+
+= Introduction =
+
+This project implements a basic 2D billiards game in python using pygame. It was originally written by Prashant Agrawal. Later, Pankaj Pandey joined him and now is an active member of this project.
+
+= Salient Features =
+
+Some of the salient features of the game include:
+  * Replay function (immensely useful for debugging purposes, plus, looks cool :P)
+  * Slow movement (so that you don't miss your critical shots) 
+  * Play/pause features at any time during the play
+  * Fancy sounds on collision of balls, when they go to holes and on finishing the game.
+  * + much more
+
+
+= Installation =
+
+Installation of PyBilliards is as simple as any other python package. Just follow the following instructions.
+
+= Install using binaries =
+
+Since PyBilliards is written in pure python, the binaries are themselves the sources. However depending on your wish you can choose to install specific binary package for you platform.
+Currently we do not yet provide specific packaged binaries, but expect them soon after a release.
+We expect to provide at least a windows installer, and maybe an rpm too.
+
+= Install using sources =
+
+Using source install in python is also pretty easy. Just download the source tarball (wait for a release :) ) and extract it to a convenient directory.
+
+== Requirements ==
+
+On your platform you need to install the latest [http://www.python.org python] version. In addition you also need the [http://www.pygame.org pygame] library.
+On linux you can easily install them using your favourite package manager.
+On windows you may need to download the installers from their website.
+
+== Installation ==
+
+Once you have python and pygame installed, run the following command from a terminal with administrative privileges
+
+    python setup.py install
+
+If you want a developer installation so that you can also try changing the code yourself and help with the development, then do
+
+    python setup.py develop
+
+
+= Install from trunk =
+
+This is for those who want the current source (with all the new features and bugs :) ).
+The project uses [http://mercurial.selenic.com/ mercurial] DVCS for version control.
+You need to install mercurial and then clone the repo using the following command
+
+    hg clone https://pybilliards.googlecode.com/hg/ pybilliards 
+
+Then you may proceed using for normal or development installation using the procedure given in the Installation section
+
+License : PyBilliards is licensed under the GPLv3 license, which basically means
+it is a free open source software, and you can use it freely and share it with
+your friends as well.
+You are also welcome to contribute to make it better
+
