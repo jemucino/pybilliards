@@ -4,6 +4,7 @@ from pygame.locals import *
 import time
 from math import *
 from numpy import *
+from settings import logging
 
 if not pygame.font: print "Warning, fonts disabled!"
 if not pygame.mixer: print "Warning, sounds disabled!"

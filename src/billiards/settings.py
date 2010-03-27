@@ -11,9 +11,7 @@ class Settings(object):
         self.add_from_file(os.path.join('settings_default.py'))
         self.userdir = self._settings['userdir']
         self.add_from_file(os.path.join(self.userdir,'user_settings.py'))
-        print self._settings['loglevel'].upper()
         logging.basicConfig(level=getattr(logging,self._settings['loglevel'].upper()))
-
 
     def get(self, key):
         keys = key.split('.')

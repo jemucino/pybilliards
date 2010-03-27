@@ -40,7 +40,7 @@ class Theme(object):
         try:
             ret = pygame.image.load(os.path.join(self.path,'ball%s'%suffix))
         except:
-            logging.info('Theme "%s" does not provide ball %d: using default'%ballnum)
+            logging.info('Theme "%s" does not provide ball%d: using default'%(self.name,ballnum))
             ret = pygame.image.load(os.path.join(self.path,'ball.png'))
         ret.convert_alpha()
         return ret
