@@ -267,18 +267,20 @@ class Billiards():
             if dist < 2 * r:
                 dirx_unit, diry_unit = dir_unit = r21 / dist
                 next_int = lambda x: ceil(x) if x > 0 else floor(x)
-                ball2.rect.move_ip((next_int(0.5 * r21[0] - r * dirx_unit), next_int(0.5 * r21[1] - r * diry_unit)))
-                ball1.rect.move_ip((next_int(-0.5 * r21[0] + r * dirx_unit), next_int(-0.5 * r21[1] + r * diry_unit)))
                 vr1 = dot(ball1.speed, dir_unit)
                 vr2 = dot(ball2.speed, dir_unit)
                 dvr = vr2 - vr1
                 ball2.speed[:] = ball2.speed - dvr * dir_unit
                 ball1.speed[:] = ball1.speed + dvr * dir_unit
+                ball2.set_pos(ball2.pos+array((next_int(0.5 * r21[0] - r * dirx_unit),
+                                                    next_int(0.5 * r21[1] - r * diry_unit))))
+                ball1.set_pos(ball1.pos+array((next_int(-0.5 * r21[0] + r * dirx_unit),
+                                                    next_int(-0.5 * r21[1] + r * diry_unit))))
                 newdist = hypot(ball1.rect.center[0] - ball2.rect.center[0], ball1.rect.center[1] - ball2.rect.center[1])
                 vr1 = dot(ball1.speed, dir_unit)
                 vr2 = dot(ball2.speed, dir_unit)
                 dvr = vr2 - vr1
-                logging.debug(('newdist', newdist, 'newdvr', dvr))
+                logging.debug(('dist', dist, 'newdist', newdist, 'newdvr', dot(ball1.speed-ball2.speed,dir_unit)))
                 return True
             else: return False
         else:
@@ -445,7 +447,10 @@ class Billiards():
                 self.launch_ball(mouse_src)
         return True
 
-if __name__ == '__main__':
-    game = Billiards(friction=True)
+def main():
+    game = Billiards()
     while game.run():
         pass
+
+if __name__ == '__main__':
+    main()

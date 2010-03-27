@@ -1,1 +1,2 @@
+include MANIFEST.in
 graft src/billiards/data/

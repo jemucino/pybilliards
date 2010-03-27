@@ -3,12 +3,15 @@
 import logging
 import os
 
+import settings_default
+
 # TODO: replace platform specific paths
 
 class Settings(object):
     def __init__(self):
         self._settings = {}
-        self.add_from_file(os.path.join('settings_default.py'))
+        #self.add_from_file(os.path.join('settings_default.py'))
+        self._settings.update(settings_default.settings)
         self.userdir = self._settings['userdir']
         self.add_from_file(os.path.join(self.userdir,'user_settings.py'))
         logging.basicConfig(level=getattr(logging,self._settings['loglevel'].upper()))
