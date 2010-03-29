@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='PyBilliards',
-      version='0.1',
+      version=open('VERSION').read(),
       description='A simple 2D billiards game',
       long_description='''A simple 2D billiards game written in python using pygame''',
       classifiers=['Topic :: Games/Entertainment',
