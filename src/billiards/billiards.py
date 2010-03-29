@@ -280,7 +280,7 @@ class Billiards():
                 vr1 = dot(ball1.speed, dir_unit)
                 vr2 = dot(ball2.speed, dir_unit)
                 dvr = vr2 - vr1
-                logging.debug(('dist', dist, 'newdist', newdist, 'newdvr', dot(ball1.speed-ball2.speed,dir_unit)))
+                #logging.debug(('dist', dist, 'newdist', newdist, 'newdvr', dot(ball1.speed-ball2.speed,dir_unit)))
                 return True
             else: return False
         else:
@@ -312,7 +312,7 @@ class Billiards():
 
         ball.speed = cue.speed * 0.6
         cue.speed[:] = 0.0
-        self.collidecue_sound.play(maxtime=100)
+        self.collidecue_sound.play()
         return True
 
     def launch_ball(self, mouse_src):
@@ -329,7 +329,7 @@ class Billiards():
                 self.cuesprite.update(pygame.mouse.get_pos(), mousepressed)
                 self.draw()
             if e.type == MOUSEBUTTONUP:
-                logging.info('mouse released')
+                #logging.debug('mouse released')
                 mousepressed = False
                 self.cuesprite.update(pygame.mouse.get_pos(), mousepressed)
                 self.start_game()

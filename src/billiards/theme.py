@@ -59,7 +59,7 @@ class Theme(object):
         return pygame.mixer.Sound(os.path.join(self.path,'collide.ogg'))
 
     def get_gotoholes_snd(self):
-        return pygame.mixer.Sound(os.path.join(self.path,'goal.ogg'))
+        return pygame.mixer.Sound(os.path.join(self.path,'gotoholes.ogg'))
 
     def get_finish_snd(self):
         return pygame.mixer.Sound(os.path.join(self.path,'finish.ogg'))
