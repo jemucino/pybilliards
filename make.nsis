@@ -1,0 +1,223 @@
+#!Nsis Installer Command Script
+#
+# This is an NSIS Installer Command Script generated automatically
+# by the Fedora nsiswrapper program.  For more information see:
+#
+#   http://fedoraproject.org/wiki/MinGW
+#
+# To build an installer from the script you would normally do:
+#
+#   makensis this_script
+#
+# which will generate the output file 'dist/pybilliards_setup_full-0.1-pre.exe' which is a Windows
+# installer containing your program.
+
+Name "Billiards"
+OutFile "dist/pybilliards_setup_full-0.1-pre.exe"
+InstallDir "c:\Program Files\Billiards"
+InstallDirRegKey HKLM SOFTWARE\Billiards "Install_Dir"
+
+ShowInstDetails hide
+ShowUninstDetails hide
+
+# Uncomment this to enable BZip2 compression, which results in
+# slightly smaller files but uses more memory at install time.
+SetCompressor lzma
+
+XPStyle on
+
+VIAddVersionKey "ProductName" "PyBilliards"
+VIAddVersionKey "Comments" "A simple 2D billiards game"
+VIAddVersionKey "CompanyName" "Contributors"
+#VIAddVersionKey "LegalTrademarks" "Test Application is a trademark of Fake company"
+VIAddVersionKey "LegalCopyright" "© Authors"
+VIAddVersionKey "FileDescription" "PyBilliards Application Installer"
+VIAddVersionKey "FileVersion" "0.1-pre"
+VIProductVersion "1.1.1.1"
+
+Page components
+Page license
+LicenseData GPLv3_license.txt
+Page directory
+Page instfiles
+
+ComponentText "Select which optional components you want to install."
+
+DirText "Please select the installation folder."
+
+Section "Billiards"
+  SectionIn RO
+
+  SetOutPath "$INSTDIR\."
+  File /r "dist/billiards/Microsoft.VC90.CRT"
+  File "dist/billiards/SDL_image.dll"
+  File "dist/billiards/SDL_mixer.dll"
+  File "dist/billiards/SDL_ttf.dll"
+  File "dist/billiards/_ctypes.pyd"
+  File "dist/billiards/_hashlib.pyd"
+  File "dist/billiards/_multiprocessing.pyd"
+  File "dist/billiards/_socket.pyd"
+  File "dist/billiards/_ssl.pyd"
+  File "dist/billiards/_tkinter.pyd"
+  File "dist/billiards/billiards.exe"
+  File "dist/billiards/bz2.pyd"
+  File /r "dist/billiards/data"
+  File "dist/billiards/jpeg.dll"
+  File "dist/billiards/libfreetype-6.dll"
+  File "dist/billiards/libogg-0.dll"
+  File "dist/billiards/libpng12-0.dll"
+  File "dist/billiards/libtiff.dll"
+  File "dist/billiards/libvorbis-0.dll"
+  File "dist/billiards/libvorbisfile-3.dll"
+  File "dist/billiards/msvcr90.dll"
+  File "dist/billiards/numpy.core._dotblas.pyd"
+  File "dist/billiards/numpy.core._sort.pyd"
+  File "dist/billiards/numpy.core.multiarray.pyd"
+  File "dist/billiards/numpy.core.scalarmath.pyd"
+  File "dist/billiards/numpy.core.umath.pyd"
+  File "dist/billiards/numpy.fft.fftpack_lite.pyd"
+  File "dist/billiards/numpy.lib._compiled_base.pyd"
+  File "dist/billiards/numpy.linalg.lapack_lite.pyd"
+  File "dist/billiards/numpy.random.mtrand.pyd"
+  File "dist/billiards/pyexpat.pyd"
+  File "dist/billiards/pygame._arraysurfarray.pyd"
+  File "dist/billiards/pygame._numericsndarray.pyd"
+  File "dist/billiards/pygame._numericsurfarray.pyd"
+  File "dist/billiards/pygame.base.pyd"
+  File "dist/billiards/pygame.bufferproxy.pyd"
+  File "dist/billiards/pygame.cdrom.pyd"
+  File "dist/billiards/pygame.color.pyd"
+  File "dist/billiards/pygame.constants.pyd"
+  File "dist/billiards/pygame.display.pyd"
+  File "dist/billiards/pygame.draw.pyd"
+  File "dist/billiards/pygame.event.pyd"
+  File "dist/billiards/pygame.fastevent.pyd"
+  File "dist/billiards/pygame.font.pyd"
+  File "dist/billiards/pygame.image.pyd"
+  File "dist/billiards/pygame.imageext.pyd"
+  File "dist/billiards/pygame.joystick.pyd"
+  File "dist/billiards/pygame.key.pyd"
+  File "dist/billiards/pygame.mask.pyd"
+  File "dist/billiards/pygame.mixer.pyd"
+  File "dist/billiards/pygame.mixer_music.pyd"
+  File "dist/billiards/pygame.mouse.pyd"
+  File "dist/billiards/pygame.movie.pyd"
+  File "dist/billiards/pygame.overlay.pyd"
+  File "dist/billiards/pygame.pixelarray.pyd"
+  File "dist/billiards/pygame.rect.pyd"
+  File "dist/billiards/pygame.rwobject.pyd"
+  File "dist/billiards/pygame.scrap.pyd"
+  File "dist/billiards/pygame.surface.pyd"
+  File "dist/billiards/pygame.surflock.pyd"
+  File "dist/billiards/pygame.time.pyd"
+  File "dist/billiards/pygame.transform.pyd"
+  File "dist/billiards/python26.dll"
+  File "dist/billiards/pywintypes26.dll"
+  File "dist/billiards/sdl.dll"
+  File "dist/billiards/select.pyd"
+  File "dist/billiards/smpeg.dll"
+  File "dist/billiards/tcl85.dll"
+  File "dist/billiards/tk85.dll"
+  File "dist/billiards/unicodedata.pyd"
+  File "dist/billiards/win32api.pyd"
+  File "dist/billiards/win32pdh.pyd"
+  File "dist/billiards/zlib1.dll"
+SectionEnd
+
+Section "Start Menu Shortcuts"
+  CreateDirectory "$SMPROGRAMS\Billiards"
+  CreateShortCut "$SMPROGRAMS\Billiards\Uninstall Billiards.lnk" "$INSTDIR\Uninstall Billiards.exe" "" "$INSTDIR\Uninstall Billiards.exe" 0
+  CreateShortCut "$SMPROGRAMS\Billiards\billiards.exe.lnk" "$INSTDIR\.\billiards.exe" "" "$INSTDIR\.\billiards.exe" 0
+SectionEnd
+
+Section "Desktop Icons"
+  CreateShortCut "$DESKTOP\billiards.exe.lnk" "$INSTDIR\.\billiards.exe" "" "$INSTDIR\.\billiards.exe" 0
+SectionEnd
+
+Section "Uninstall"
+  Delete /rebootok "$DESKTOP\billiards.exe.lnk"
+  Delete /rebootok "$SMPROGRAMS\Billiards\billiards.exe.lnk"
+  Delete /rebootok "$SMPROGRAMS\Billiards\Uninstall Billiards.lnk"
+  RMDir "$SMPROGRAMS\Billiards"
+
+  Delete /rebootok "$INSTDIR\.\zlib1.dll"
+  Delete /rebootok "$INSTDIR\.\win32pdh.pyd"
+  Delete /rebootok "$INSTDIR\.\win32api.pyd"
+  Delete /rebootok "$INSTDIR\.\unicodedata.pyd"
+  Delete /rebootok "$INSTDIR\.\tk85.dll"
+  Delete /rebootok "$INSTDIR\.\tcl85.dll"
+  Delete /rebootok "$INSTDIR\.\smpeg.dll"
+  Delete /rebootok "$INSTDIR\.\select.pyd"
+  Delete /rebootok "$INSTDIR\.\sdl.dll"
+  Delete /rebootok "$INSTDIR\.\pywintypes26.dll"
+  Delete /rebootok "$INSTDIR\.\python26.dll"
+  Delete /rebootok "$INSTDIR\.\pygame.transform.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.time.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.surflock.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.surface.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.scrap.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.rwobject.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.rect.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.pixelarray.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.overlay.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.movie.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.mouse.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.mixer_music.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.mixer.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.mask.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.key.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.joystick.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.imageext.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.image.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.font.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.fastevent.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.event.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.draw.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.display.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.constants.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.color.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.cdrom.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.bufferproxy.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame.base.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame._numericsurfarray.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame._numericsndarray.pyd"
+  Delete /rebootok "$INSTDIR\.\pygame._arraysurfarray.pyd"
+  Delete /rebootok "$INSTDIR\.\pyexpat.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.random.mtrand.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.linalg.lapack_lite.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.lib._compiled_base.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.fft.fftpack_lite.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.core.umath.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.core.scalarmath.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.core.multiarray.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.core._sort.pyd"
+  Delete /rebootok "$INSTDIR\.\numpy.core._dotblas.pyd"
+  Delete /rebootok "$INSTDIR\.\msvcr90.dll"
+  Delete /rebootok "$INSTDIR\.\libvorbisfile-3.dll"
+  Delete /rebootok "$INSTDIR\.\libvorbis-0.dll"
+  Delete /rebootok "$INSTDIR\.\libtiff.dll"
+  Delete /rebootok "$INSTDIR\.\libpng12-0.dll"
+  Delete /rebootok "$INSTDIR\.\libogg-0.dll"
+  Delete /rebootok "$INSTDIR\.\libfreetype-6.dll"
+  Delete /rebootok "$INSTDIR\.\jpeg.dll"
+  RMDir /r "$INSTDIR\.\data"
+
+  Delete /rebootok "$INSTDIR\.\bz2.pyd"
+  Delete /rebootok "$INSTDIR\.\billiards.exe"
+  Delete /rebootok "$INSTDIR\.\_tkinter.pyd"
+  Delete /rebootok "$INSTDIR\.\_ssl.pyd"
+  Delete /rebootok "$INSTDIR\.\_socket.pyd"
+  Delete /rebootok "$INSTDIR\.\_multiprocessing.pyd"
+  Delete /rebootok "$INSTDIR\.\_hashlib.pyd"
+  Delete /rebootok "$INSTDIR\.\_ctypes.pyd"
+  Delete /rebootok "$INSTDIR\.\SDL_ttf.dll"
+  Delete /rebootok "$INSTDIR\.\SDL_mixer.dll"
+  Delete /rebootok "$INSTDIR\.\SDL_image.dll"
+  RMDir /r "$INSTDIR\.\Microsoft.VC90.CRT"
+
+  RMDir "$INSTDIR"
+SectionEnd
+
+Section -post
+  WriteUninstaller "$INSTDIR\Uninstall Billiards.exe"
+SectionEnd

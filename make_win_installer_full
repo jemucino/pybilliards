@@ -1,0 +1,43 @@
+#! /bin/bash
+
+# you need to use py26win
+PYINSTDIR="/mnt/data/Program Installers/Programs/Programming/py/py26win"
+PYI_SPEC=billiards_pyinstaller.spec
+PYBILLIARDS_DIR=`pwd`
+PWD_OLD=`pwd`
+WINPATH=~/.wine/drive_c/windows/:~/.wine/drive_c/windows/system:~/.drive_c/windows/system32:~/.wine/drive_c/Python26/
+WINPATH=dist/billiards/Microsoft.VC90.CRT:$WINPATH
+WINPATH=dist/billiards:$WINPATH
+VERSION=`cat ${PYBILLIARDS_DIR}/VERSION`
+
+cd "${PYINSTDIR}"
+#python Build.py -y "${PYBILLIARDS_DIR}/${PYI_SPEC}"
+wine python Build.py -y "${PYBILLIARDS_DIR}/${PYI_SPEC}"
+
+PATH=$PATH:$WINPATH
+PATHOLD=$PATH
+
+cd "$PYBILLIARDS_DIR"
+
+# this is because the dep finder uses sdl.dll instead of SDL.dll
+mv dist/billiards/SDL.dll dist/billiards/sdl.dll
+#cp ~/.wine/drive_c/Python26/msvcr90.dll "${PYBILLIARDS_DIR}/dist/billiards/"
+cp "${PYBILLIARDS_DIR}/dist/billiards/Microsoft.VC90.CRT/msvcr90.dll" "${PYBILLIARDS_DIR}/dist/billiards/"
+
+
+nsiswrapper dist/billiards/*  --outfile "dist/pybilliards_setup_full-${VERSION}.exe" --installdir "c:\\Program Files\\Billiards" > make.nsis
+
+# set lzma compression
+sed -i 's/\#SetCompressor bzip2/SetCompressor lzma/g' make.nsis
+# set default install dir as c:\\Program Files\\Billiards
+#sed -i 's/InstallDir "c:\\Billiards"/InstallDir "c:\\Program Files\\Billiards"/g' make.nsis
+
+# Replace custom contents from file insert.nsis after 'Page Contents' tag in make.nsis
+sed -e "/Page components/r insert.nsis" -e "/Page components/d" -i make.nsis
+# Replace the VERSION string
+sed -i "s/VERSION/$VERSION/g" make.nsis
+
+makensis make.nsis
+
+cd "$PWD_OLD"
+

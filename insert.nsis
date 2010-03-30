@@ -1,0 +1,12 @@
+VIAddVersionKey "ProductName" "PyBilliards"
+VIAddVersionKey "Comments" "A simple 2D billiards game"
+VIAddVersionKey "CompanyName" "PyBilliards Contributors"
+#VIAddVersionKey "LegalTrademarks" "Test Application is a trademark of Fake company"
+VIAddVersionKey "LegalCopyright" "© Authors"
+VIAddVersionKey "FileDescription" "PyBilliards Application Installer"
+VIAddVersionKey "FileVersion" "VERSION"
+VIProductVersion "1.1.1.1"
+
+Page components
+Page license
+LicenseData GPLv3_license.txt
