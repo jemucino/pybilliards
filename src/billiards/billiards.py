@@ -326,6 +326,9 @@ class Billiards():
 
         #init_rect = self.cuesprite.sprites()[0].rect
         mousepressed = True         # remains True till the mouse is held down
+        self.cuesprite.clear(self.screen, self.background)
+        self.cuesprite.update(pygame.mouse.get_pos(), mousepressed)
+        self.draw()
         while mousepressed:
             e = pygame.event.poll()
             if e.type == MOUSEMOTION:
