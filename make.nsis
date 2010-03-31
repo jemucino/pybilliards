@@ -9,11 +9,11 @@
 #
 #   makensis this_script
 #
-# which will generate the output file 'dist/pybilliards_setup_full-0.1-pre.exe' which is a Windows
+# which will generate the output file 'dist/pybilliards_setup_full-0.1-pre2.exe' which is a Windows
 # installer containing your program.
 
 Name "Billiards"
-OutFile "dist/pybilliards_setup_full-0.1-pre.exe"
+OutFile "dist/pybilliards_setup_full-0.1-pre2.exe"
 InstallDir "c:\Program Files\Billiards"
 InstallDirRegKey HKLM SOFTWARE\Billiards "Install_Dir"
 
@@ -28,11 +28,11 @@ XPStyle on
 
 VIAddVersionKey "ProductName" "PyBilliards"
 VIAddVersionKey "Comments" "A simple 2D billiards game"
-VIAddVersionKey "CompanyName" "Contributors"
+VIAddVersionKey "CompanyName" "PyBilliards Contributors"
 #VIAddVersionKey "LegalTrademarks" "Test Application is a trademark of Fake company"
 VIAddVersionKey "LegalCopyright" "© Authors"
 VIAddVersionKey "FileDescription" "PyBilliards Application Installer"
-VIAddVersionKey "FileVersion" "0.1-pre"
+VIAddVersionKey "FileVersion" "0.1-pre2"
 VIProductVersion "1.1.1.1"
 
 Page components

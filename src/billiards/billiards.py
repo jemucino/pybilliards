@@ -52,6 +52,7 @@ class Scoreboard(pygame.sprite.Sprite):
         self.board = board
         self.players = self.board.players
         self.set_active_player(self.players[0])
+        self.set_new_active_player()
 
     def set_active_player(self,player):
         for p in self.players:
@@ -61,6 +62,7 @@ class Scoreboard(pygame.sprite.Sprite):
             else:
                 p.is_active = False
         self.new_active_player = self.active_player
+        self.display()
 
     def set_new_active_player(self):
         activeplayer_index = self.players.index(self.active_player)
@@ -82,14 +84,16 @@ class Scoreboard(pygame.sprite.Sprite):
             self.active_player.score -= 1
         else:
             self.active_player.score += 1
+        self.display()
 
     def display(self):
-        logging.info('Player ID\tScore\tStatus')
+        print ''
+        print 'Player ID\tScore\tStatus'
         underline = lambda s: '='*len(s)
-        logging.info(underline('Player ID')+'\t'+underline('Score')+'\t'+underline('Status'))
+        print underline('Player ID')+'\t'+underline('Score')+'\t'+underline('Status')
         for player in self.board.players:
-                status = 'Active' if player.is_active else 'Idle'
-                logging.info(('%s\t%s\t')%(player.name,player.score)+status)
+                status = '* Active' if player.is_active else 'Idle'
+                print '%s\t%s\t'%(player.name,player.score) + status
 
 class Cue(pygame.sprite.Sprite):
     def __init__(self, board):
@@ -217,8 +221,8 @@ class Billiards():
             whiteballpos = posarr[-1]
             whiteballspeed = speeds[-1]
             self.whiteball = Ball(whiteballpos, self, vel=whiteballspeed, is_white=True) # making last ball on posarr and speeds as new whiteball
-        if self.whiteball is None:
-            self.whiteball = Ball((self.width / 2.0, self.height / 2.0), self, is_white=True)
+        else:
+            self.whiteball = Ball(array([self.width / 2.0, self.height / 2.0]), self, is_white=True)
         self.ballsprites.add(self.whiteball)
 
     def init_consts(self):
@@ -262,7 +266,7 @@ class Billiards():
     def collide_ball(self, ball1, ball2):
         if ball1.rect.colliderect(ball2.rect):
             r = self.radius
-            r21 = array((ball1.rect.center[0] - ball2.rect.center[0], ball1.rect.center[1] - ball2.rect.center[1]))
+            r21 = array([ball1.rect.center[0] - ball2.rect.center[0], ball1.rect.center[1] - ball2.rect.center[1]])
             dist = hypot(*r21)
             if dist < 2 * r:
                 dirx_unit, diry_unit = dir_unit = r21 / dist
@@ -342,13 +346,13 @@ class Billiards():
 
     def on_allsleeping(self):
         if not self.whiteball in self.ballsprites.sprites():
-            if not self.new_player_set:
-                self.scoreboard.set_new_active_player()
-            else:
-                whiteball = Ball((self.width / 2.0, self.height / 2.0), self, is_white=True)
-                self.whiteball = whiteball
-                self.ballsprites.add(whiteball)
-        self.new_player_set = True
+            whiteball = Ball(array([self.width / 2.0, self.height / 2.0]), self, is_white=True)
+            self.whiteball = whiteball
+            self.ballsprites.add(whiteball)
+            self.scoreboard.set_new_active_player()
+        if not self.new_player_set:
+            self.scoreboard.set_active_player(self.scoreboard.new_active_player)
+            self.new_player_set = True
 
     def start_game(self):
         self.RUNNING = True
@@ -385,6 +389,7 @@ class Billiards():
                 if event.type == MOUSEBUTTONDOWN:
                     self.new_player_set = False
                     self.scoreboard.set_active_player(self.scoreboard.new_active_player)
+                    self.scoreboard.set_new_active_player()
                     self.initscores = [player.score for player in self.players]
                     if self.replaying:
                         self.wait = 0.01
@@ -411,6 +416,7 @@ class Billiards():
                 if self.runningballs:
                     if not pygame.mixer.get_busy():
                         self.finishmessage.play()
+                        logging.info('Game Over')
                         self.runningballs = False
             while self.RUNNING == False:
                 event = pygame.event.poll()

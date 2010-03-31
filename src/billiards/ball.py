@@ -57,16 +57,16 @@ class Ball(pygame.sprite.Sprite):
             reflected = True
             self.speed[0] = -self.speed[0]
             if self.rect.left < 0:
-                self.set_pos([self.radius, self.rect.center[1]])
+                self.set_pos(array([self.radius, self.rect.center[1]]))
             else:
-                self.set_pos([self.board.width - self.radius, self.rect.center[1]])
+                self.set_pos(array([self.board.width - self.radius, self.rect.center[1]]))
         elif self.rect.top < 0 or self.rect.bottom > self.board.height:
             reflected = True
             self.speed[1] = -self.speed[1]
             if self.rect.top < 0:
-                self.set_pos([self.rect.center[0], self.radius])
+                self.set_pos(array([self.rect.center[0], self.radius]))
             else:
-                self.set_pos([self.rect.center[0], self.board.height - self.radius])
+                self.set_pos(array([self.rect.center[0], self.board.height - self.radius]))
         if reflected:
             self.board.collidecue_sound.play()
 
@@ -85,10 +85,14 @@ class Ball(pygame.sprite.Sprite):
     def go_to_holes(self):
         for hole in self.board.holerectlist:
             if hypot(*(self.rect.center-array(hole.center))) < 0.5*self.board.hole_radius:
+                if self == self.board.whiteball:
+                    print self.board.scoreboard.active_player.name,'fouled'
+                else:
+                    print self.board.scoreboard.active_player.name,'scored'
+                self.board.gotoholes_sound.play()
                 self.board.ballsprites.remove(self) # remove that ball from the game
                 self.board.scoreboard.update(ball=self)          # update the score
-                self.board.gotoholes_sound.play()
-
+                self.board.scoreboard.new_active_player = self.board.scoreboard.active_player
 
     def update(self, change=None, dest=None):
         '''
