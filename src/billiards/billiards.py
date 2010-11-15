@@ -235,7 +235,7 @@ class Billiards():
         self.RIGHTBOTTOM = (self.width - rad, self.height - rad)
 
     def draw_holes(self):
-        self.hole_radius = rad = 1.2 * self.radius
+        self.hole_radius = rad = int(1.2 * self.radius)
 
         lefttoprect = pygame.draw.circle(self.screen, BLACK, self.LEFTTOP, rad)
         middletoprect = pygame.draw.circle(self.screen, BLACK, self.MIDDLETOP, rad)
